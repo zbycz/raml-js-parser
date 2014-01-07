@@ -6535,7 +6535,6 @@ var Buffer=require("__browserify_Buffer").Buffer;(function() {
     function SecuritySchemes() {
       this.get_security_scheme = __bind(this.get_security_scheme, this);
       this.get_all_schemes = __bind(this.get_all_schemes, this);
-      this.has_schemes = __bind(this.has_schemes, this);
       this.load_security_schemes = __bind(this.load_security_schemes, this);
       this.declaredSchemes = {};
     }
@@ -6555,13 +6554,6 @@ var Buffer=require("__browserify_Buffer").Buffer;(function() {
           });
         }
       }
-    };
-
-    SecuritySchemes.prototype.has_schemes = function(node) {
-      if (this.declaredSchemes.length === 0 && this.has_property(node, "^schemes$")) {
-        this.load_schemes(node);
-      }
-      return Object.keys(this.declaredSchemes).length > 0;
     };
 
     SecuritySchemes.prototype.get_all_schemes = function() {
