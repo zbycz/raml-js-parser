@@ -12,8 +12,8 @@ class @Protocols
       @apply_protocols_to_resources node, protocols
 
   apply_protocols_to_root: (node) ->
-    if @has_property node, 'protocols'
-      return @get_property node, 'protocols'
+    if @has_property node, '^protocols$'
+      return @get_property node, '^protocols$'
 
     unless baseUri = @property_value node, /^baseUri$/
       return
@@ -36,7 +36,7 @@ class @Protocols
 
   apply_protocols_to_methods: (node, protocols) ->
     for method in @child_methods node[1]
-      unless @has_property method[1], 'protocols'
+      unless @has_property method[1], '^protocols$'
         unless util.isMapping method[1]
           method[1] = new nodes.MappingNode 'tag:yaml.org,2002:map', [], method[1].start_mark, method[1].end_mark
 

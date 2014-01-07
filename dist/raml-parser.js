@@ -3663,8 +3663,8 @@ var Buffer=require("__browserify_Buffer").Buffer;(function() {
 
     Protocols.prototype.apply_protocols_to_root = function(node) {
       var baseUri, parsedBaseUri, protocol, protocols;
-      if (this.has_property(node, 'protocols')) {
-        return this.get_property(node, 'protocols');
+      if (this.has_property(node, '^protocols$')) {
+        return this.get_property(node, '^protocols$');
       }
       if (!(baseUri = this.property_value(node, /^baseUri$/))) {
         return;
@@ -3694,7 +3694,7 @@ var Buffer=require("__browserify_Buffer").Buffer;(function() {
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         method = _ref[_i];
-        if (!this.has_property(method[1], 'protocols')) {
+        if (!this.has_property(method[1], '^protocols$')) {
           if (!util.isMapping(method[1])) {
             method[1] = new nodes.MappingNode('tag:yaml.org,2002:map', [], method[1].start_mark, method[1].end_mark);
           }
@@ -3820,7 +3820,7 @@ var Buffer=require("__browserify_Buffer").Buffer;(function() {
         return deferred.promise;
       } catch (_error) {
         error = _error;
-        throw new exports.FileError("while fetching " + file, null, "cannot fetch " + file + " (" + error + ")", this.start_mark);
+        throw new exports.FileError("while fetching " + file, null, "cannot fetch " + file + " (" + error + "), check that the server is up and that CORS is enabled", this.start_mark);
       }
     };
 
@@ -4753,8 +4753,8 @@ var Buffer=require("__browserify_Buffer").Buffer;(function() {
       var allTypes,
         _this = this;
       this.load_default_media_type(node);
-      if (this.has_property(node, 'resourceTypes')) {
-        allTypes = this.property_value(node, 'resourceTypes');
+      if (this.has_property(node, '^resourceTypes$')) {
+        allTypes = this.property_value(node, '^resourceTypes$');
         if (allTypes && typeof allTypes === 'object') {
           return allTypes.forEach(function(type_item) {
             if (type_item && typeof type_item === 'object' && typeof type_item.value === 'object') {
@@ -4768,7 +4768,7 @@ var Buffer=require("__browserify_Buffer").Buffer;(function() {
     };
 
     ResourceTypes.prototype.has_types = function(node) {
-      if (Object.keys(this.declaredTypes).length === 0 && this.has_property(node, 'resourceTypes')) {
+      if (Object.keys(this.declaredTypes).length === 0 && this.has_property(node, '^resourceTypes$')) {
         this.load_types(node);
       }
       return Object.keys(this.declaredTypes).length > 0;
@@ -4792,8 +4792,8 @@ var Buffer=require("__browserify_Buffer").Buffer;(function() {
         return resources.forEach(function(resource) {
           var type;
           _this.apply_default_media_type_to_resource(resource[1]);
-          if (_this.has_property(resource[1], 'type')) {
-            type = _this.get_property(resource[1], 'type');
+          if (_this.has_property(resource[1], '^type$')) {
+            type = _this.get_property(resource[1], '^type$');
             _this.apply_type(resourceUri + resource[0].value, resource, type);
           }
           return _this.apply_types(resource[1], resourceUri + resource[0].value);
@@ -4823,8 +4823,8 @@ var Buffer=require("__browserify_Buffer").Buffer;(function() {
       compiledTypes[childTypeName] = childType;
       this.apply_default_media_type_to_resource(childType);
       this.apply_traits_to_resource(resourceUri, childType, false);
-      while (this.has_property(childType, 'type')) {
-        typeKey = this.get_property(childType, 'type');
+      while (this.has_property(childType, '^type$')) {
+        typeKey = this.get_property(childType, '^type$');
         parentTypeName = this.key_or_value(typeKey);
         if (parentTypeName in compiledTypes) {
           pathToCircularRef = typesToApply.concat(parentTypeName).join(' -> ');
@@ -6443,8 +6443,8 @@ var Buffer=require("__browserify_Buffer").Buffer;(function() {
     Schemas.prototype.load_schemas = function(node) {
       var allSchemas,
         _this = this;
-      if (this.has_property(node, "schemas")) {
-        allSchemas = this.property_value(node, "schemas");
+      if (this.has_property(node, "^schemas$")) {
+        allSchemas = this.property_value(node, "^schemas$");
         if (allSchemas && typeof allSchemas === "object") {
           return allSchemas.forEach(function(schema_entry) {
             if (schema_entry && typeof schema_entry === "object" && typeof schema_entry.value === "object") {
@@ -6458,7 +6458,7 @@ var Buffer=require("__browserify_Buffer").Buffer;(function() {
     };
 
     Schemas.prototype.has_schemas = function(node) {
-      if (this.declaredSchemas.length === 0 && this.has_property(node, "schemas")) {
+      if (this.declaredSchemas.length === 0 && this.has_property(node, "^schemas$")) {
         this.load_schemas(node);
       }
       return Object.keys(this.declaredSchemas).length > 0;
@@ -6543,8 +6543,8 @@ var Buffer=require("__browserify_Buffer").Buffer;(function() {
     SecuritySchemes.prototype.load_security_schemes = function(node) {
       var allschemes,
         _this = this;
-      if (this.has_property(node, "securitySchemes")) {
-        allschemes = this.property_value(node, "securitySchemes");
+      if (this.has_property(node, "^securitySchemes$")) {
+        allschemes = this.property_value(node, "^securitySchemes$");
         if (allschemes && typeof allschemes === "object") {
           return allschemes.forEach(function(scheme_entry) {
             if (scheme_entry.tag === 'tag:yaml.org,2002:map') {
@@ -6558,7 +6558,7 @@ var Buffer=require("__browserify_Buffer").Buffer;(function() {
     };
 
     SecuritySchemes.prototype.has_schemes = function(node) {
-      if (this.declaredSchemes.length === 0 && this.has_property(node, "schemes")) {
+      if (this.declaredSchemes.length === 0 && this.has_property(node, "^schemes$")) {
         this.load_schemes(node);
       }
       return Object.keys(this.declaredSchemes).length > 0;
@@ -7336,7 +7336,7 @@ var Buffer=require("__browserify_Buffer").Buffer;(function() {
       if (!util.isMapping(node || (node != null ? node.value : void 0))) {
         return;
       }
-      return this.mediaType = this.property_value(node, "mediaType");
+      return this.mediaType = this.property_value(node, "^mediaType$");
     };
 
     Transformations.prototype.get_media_type = function() {
@@ -7458,14 +7458,14 @@ var Buffer=require("__browserify_Buffer").Buffer;(function() {
       if (!util.isMapping(method)) {
         return;
       }
-      if (this.has_property(method, "body")) {
-        this.apply_default_media_type_to_body(this.get_property(method, "body"));
+      if (this.has_property(method, "^body$")) {
+        this.apply_default_media_type_to_body(this.get_property(method, "^body$"));
       }
-      if (this.has_property(method, "responses")) {
-        responses = this.get_property(method, "responses");
+      if (this.has_property(method, "^responses$")) {
+        responses = this.get_property(method, "^responses$");
         return responses.value.forEach(function(response) {
-          if (_this.has_property(response[1], "body")) {
-            return _this.apply_default_media_type_to_body(_this.get_property(response[1], "body"));
+          if (_this.has_property(response[1], "^body$")) {
+            return _this.apply_default_media_type_to_body(_this.get_property(response[1], "^body$"));
           }
         });
       }
