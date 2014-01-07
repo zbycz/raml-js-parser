@@ -23,11 +23,6 @@ class @SecuritySchemes
             scheme_entry.value.forEach (scheme) =>
               @declaredSchemes[scheme[0].value] = scheme[1].value
 
-  has_schemes: (node) =>
-    if @declaredSchemes.length == 0 and @has_property node, "^schemes$"
-      @load_schemes node
-    return Object.keys(@declaredSchemes).length > 0
-
   get_all_schemes: =>
     return @declaredSchemes
 
