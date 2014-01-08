@@ -17,8 +17,8 @@ class @ResourceTypes
   # Loading is extra careful because it is done before validation (so it can be used for validation)
   load_types: (node) =>
     @load_default_media_type(node)
-    if @has_property node, '^resourceTypes$'
-      allTypes = @property_value node, '^resourceTypes$'
+    if @has_property node, 'resourceTypes'
+      allTypes = @property_value node, 'resourceTypes'
       if allTypes and typeof allTypes is 'object'
         allTypes.forEach (type_item) =>
           if type_item and typeof type_item is 'object' and typeof type_item.value is 'object'
@@ -26,7 +26,7 @@ class @ResourceTypes
               @declaredTypes[type[0].value] = type
 
   has_types: (node) =>
-    if Object.keys(@declaredTypes).length == 0 and @has_property node, '^resourceTypes$'
+    if Object.keys(@declaredTypes).length == 0 and @has_property node, 'resourceTypes'
       @load_types node
     return Object.keys(@declaredTypes).length > 0
 
@@ -40,8 +40,8 @@ class @ResourceTypes
       resources.forEach (resource) =>
         @apply_default_media_type_to_resource resource[1]
 
-        if @has_property resource[1], '^type$'
-          type = @get_property resource[1], '^type$'
+        if @has_property resource[1], 'type'
+          type = @get_property resource[1], 'type'
           @apply_type resourceUri + resource[0].value, resource, type
         @apply_types resource[1], resourceUri + resource[0].value
     else
@@ -69,8 +69,8 @@ class @ResourceTypes
     @apply_traits_to_resource resourceUri, childType, false
 
     # unwind the inheritance chain and check for circular references, while resolving final type shape
-    while @has_property childType, '^type$'
-      typeKey        = @get_property childType, '^type$'
+    while @has_property childType, 'type'
+      typeKey        = @get_property childType, 'type'
       parentTypeName = @key_or_value typeKey
 
       if parentTypeName of compiledTypes
