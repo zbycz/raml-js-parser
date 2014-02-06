@@ -3666,7 +3666,7 @@ var Buffer=require("__browserify_Buffer").Buffer;(function() {
       if (this.has_property(node, 'protocols')) {
         return this.get_property(node, 'protocols');
       }
-      if (!(baseUri = this.property_value(node, 'baseUri'))) {
+      if (!(baseUri = this.property_value(node, /^baseUri$/))) {
         return;
       }
       parsedBaseUri = url.parse(baseUri);
@@ -6444,7 +6444,7 @@ var Buffer=require("__browserify_Buffer").Buffer;(function() {
       var allSchemas,
         _this = this;
       if (this.has_property(node, "schemas")) {
-        allSchemas = this.property_value(node, 'schemas');
+        allSchemas = this.property_value(node, "schemas");
         if (allSchemas && typeof allSchemas === "object") {
           return allSchemas.forEach(function(schema_entry) {
             if (schema_entry && typeof schema_entry === "object" && typeof schema_entry.value === "object") {
@@ -6535,6 +6535,7 @@ var Buffer=require("__browserify_Buffer").Buffer;(function() {
     function SecuritySchemes() {
       this.get_security_scheme = __bind(this.get_security_scheme, this);
       this.get_all_schemes = __bind(this.get_all_schemes, this);
+      this.has_schemes = __bind(this.has_schemes, this);
       this.load_security_schemes = __bind(this.load_security_schemes, this);
       this.declaredSchemes = {};
     }
@@ -6543,7 +6544,7 @@ var Buffer=require("__browserify_Buffer").Buffer;(function() {
       var allschemes,
         _this = this;
       if (this.has_property(node, "securitySchemes")) {
-        allschemes = this.property_value(node, 'securitySchemes');
+        allschemes = this.property_value(node, "securitySchemes");
         if (allschemes && typeof allschemes === "object") {
           return allschemes.forEach(function(scheme_entry) {
             if (scheme_entry.tag === 'tag:yaml.org,2002:map') {
@@ -6554,6 +6555,13 @@ var Buffer=require("__browserify_Buffer").Buffer;(function() {
           });
         }
       }
+    };
+
+    SecuritySchemes.prototype.has_schemes = function(node) {
+      if (this.declaredSchemes.length === 0 && this.has_property(node, "schemes")) {
+        this.load_schemes(node);
+      }
+      return Object.keys(this.declaredSchemes).length > 0;
     };
 
     SecuritySchemes.prototype.get_all_schemes = function() {
@@ -7082,8 +7090,8 @@ var Buffer=require("__browserify_Buffer").Buffer;(function() {
     Traits.prototype.load_traits = function(node) {
       var allTraits,
         _this = this;
-      if (this.has_property(node, 'traits')) {
-        allTraits = this.property_value(node, 'traits');
+      if (this.has_property(node, /^traits$/)) {
+        allTraits = this.property_value(node, /^traits$/);
         if (allTraits && typeof allTraits === "object") {
           return allTraits.forEach(function(trait_item) {
             if (trait_item && typeof trait_item === "object" && typeof trait_item.value === "object") {
@@ -7097,7 +7105,7 @@ var Buffer=require("__browserify_Buffer").Buffer;(function() {
     };
 
     Traits.prototype.has_traits = function(node) {
-      if (this.declaredTraits.length === 0 && this.has_property(node, 'traits')) {
+      if (this.declaredTraits.length === 0 && this.has_property(node, /^traits$/)) {
         this.load_traits(node);
       }
       return Object.keys(this.declaredTraits).length > 0;
@@ -7137,8 +7145,8 @@ var Buffer=require("__browserify_Buffer").Buffer;(function() {
         return;
       }
       methods = this.child_methods(resource);
-      if (this.has_property(resource, 'is')) {
-        uses = this.property_value(resource, 'is');
+      if (this.has_property(resource, /^is$/)) {
+        uses = this.property_value(resource, /^is$/);
         uses.forEach(function(use) {
           return methods.forEach(function(method) {
             return _this.apply_trait(resourceUri, method, use);
@@ -7146,8 +7154,8 @@ var Buffer=require("__browserify_Buffer").Buffer;(function() {
         });
       }
       methods.forEach(function(method) {
-        if (_this.has_property(method[1], 'is')) {
-          uses = _this.property_value(method[1], 'is');
+        if (_this.has_property(method[1], /^is$/)) {
+          uses = _this.property_value(method[1], /^is$/);
           return uses.forEach(function(use) {
             return _this.apply_trait(resourceUri, method, use);
           });
@@ -7328,7 +7336,7 @@ var Buffer=require("__browserify_Buffer").Buffer;(function() {
       if (!util.isMapping(node || (node != null ? node.value : void 0))) {
         return;
       }
-      return this.mediaType = this.property_value(node, 'mediaType');
+      return this.mediaType = this.property_value(node, "mediaType");
     };
 
     Transformations.prototype.get_media_type = function() {
@@ -7450,14 +7458,17 @@ var Buffer=require("__browserify_Buffer").Buffer;(function() {
       if (!util.isMapping(method)) {
         return;
       }
-      if (this.has_property(method, 'body')) {
-        this.apply_default_media_type_to_body(this.get_property(method, 'body'));
+      if (this.has_property(method, "body")) {
+        this.apply_default_media_type_to_body(this.get_property(method, "body"));
       }
-      if (this.has_property(method, 'responses')) {
-        responses = this.get_property(method, 'responses');
+      if (this.has_property(method, "responses")) {
+        responses = this.get_property(method, "responses");
+        if (!(responses && responses.value)) {
+          return;
+        }
         return responses.value.forEach(function(response) {
-          if (_this.has_property(response[1], 'body')) {
-            return _this.apply_default_media_type_to_body(_this.get_property(response[1], 'body'));
+          if (_this.has_property(response[1], "body")) {
+            return _this.apply_default_media_type_to_body(_this.get_property(response[1], "body"));
           }
         });
       }
@@ -9144,7 +9155,7 @@ var Buffer=require("__browserify_Buffer").Buffer;(function() {
     };
 
     Validator.prototype.isXmlSchema = function(string) {
-      return string != null ? string.match(/^\s*(<\?xml[^>]+>)?[\s\n]*<xs:schema/) : void 0;
+      return string != null ? string.match(/^\s*(<\?xml[^>]+>)?[\s\n]*<xs:sxhema/) : void 0;
     };
 
     Validator.prototype.validate_common_properties = function(property, allowParameterKeys, context) {
@@ -9232,7 +9243,7 @@ var Buffer=require("__browserify_Buffer").Buffer;(function() {
     Validator.prototype.has_property = function(node, property) {
       if (node && util.isMapping(node)) {
         return node.value.some(function(childNode) {
-          return childNode[0].value && typeof childNode[0].value !== "object" && childNode[0].value === property;
+          return childNode[0].value && typeof childNode[0].value !== "object" && childNode[0].value.match(property);
         });
       }
       return false;
@@ -9241,7 +9252,7 @@ var Buffer=require("__browserify_Buffer").Buffer;(function() {
     Validator.prototype.property_value = function(node, property) {
       var filteredNodes;
       filteredNodes = node.value.filter(function(childNode) {
-        return typeof childNode[0].value !== "object" && childNode[0].value === property;
+        return typeof childNode[0].value !== "object" && childNode[0].value.match(property);
       });
       if (filteredNodes.length) {
         return filteredNodes[0][1].value;
@@ -9253,7 +9264,7 @@ var Buffer=require("__browserify_Buffer").Buffer;(function() {
         _this = this;
       if (node && util.isMapping(node)) {
         filteredNodes = node.value.filter(function(childNode) {
-          return util.isString(childNode[0]) && childNode[0].value === property;
+          return util.isString(childNode[0]) && childNode[0].value.match(property);
         });
         if (filteredNodes.length > 0) {
           if (filteredNodes[0].length > 0) {
@@ -9265,13 +9276,13 @@ var Buffer=require("__browserify_Buffer").Buffer;(function() {
     };
 
     Validator.prototype.get_properties = function(node, property) {
-      var prop, properties, _i, _len, _ref1;
+      var prop, properties, _i, _len, _ref1, _ref2;
       properties = [];
       if (node && util.isMapping(node)) {
         _ref1 = node.value;
         for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
           prop = _ref1[_i];
-          if (util.isString(prop[0]) && prop[0].value === property) {
+          if (util.isString(prop[0]) && ((_ref2 = prop[0].value) != null ? _ref2.match(property) : void 0)) {
             properties.push(prop);
           } else {
             properties = properties.concat(this.get_properties(prop[1], property));
