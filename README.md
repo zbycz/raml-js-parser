@@ -113,3 +113,11 @@ RAML.Parser.loadFile('http://localhost:9001/myAPI.raml').then( function(data) {
 ```
 
 Notice that the in-browser version can fetch remote API definitions via XHR.
+
+## Building
+
+Inflection.js and Browserify do not play nice, while we get this sorted out, after you run `npm install` and before running `grunt`, make sure to patch inflection:
+
+ - npm install
+ - patch node_modules/inflection/lib/inflection.js < inflection.patch
+ - grunt
